@@ -1,14 +1,5 @@
-const request = require("request-promise");
+const lagou = require("./lagou");
 
-console.log("Started!");
-
-async function start(){
-const res = await request.get("https://www.lagou.com/jobs/list_前端?labelWords=&fromSearch=true&suginput=", {
-    resolveWithFullResponse: true
-});
-
-console.log(res.headers['content-type'])
-
+async function start() {
+  await lagou();
 }
-
-start()
