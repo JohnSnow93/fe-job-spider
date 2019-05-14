@@ -1,7 +1,7 @@
 const puppeteer = require("puppeteer");
 const { URL } = require("url");
 const fs = require('fs');
-const {getDistrict} = require('./chengduDistrict');
+const {getDistrict, getKeyWords, processSalary} = require('./chengduDistrict');
 
 function generateUrl(page = 1){
   return `https://www.zhipin.com/c101270100/?query=前端&page=${page}&;ka=page-${page}`;
@@ -52,8 +52,12 @@ async function fetchDetail(url, browser){
   const page = await browser.newPage();
   await page.goto(url);
   let jobDescription = await page.$eval('.job-sec', el => el.innerText);
-  let keywords = jobDescription.match(/\b[a-zA-Z]+\b/ig) || [];
+  let keywords = getKeyWords(jobDescription);
   let salary = await page.$eval('.salary', el => el.innerText);
+  salary = processSalary(salary)
+  let infoArr = await page.$eval('.job-primary > .info-primary > p', el => el.innerHTML.split('<em class="dolt"></em>'));
+  let year = infoArr[1];
+  let education = infoArr[2];
   let location = await page.$eval('.location-address', el => el.innerText);
   let district = await getDistrict(location);
   let companyStaffAmount = await page.$eval('.sider-company > p:nth-child(4)', el => el.innerText);
@@ -61,23 +65,20 @@ async function fetchDetail(url, browser){
 
   await page.close();
 
-  return { district, salary, keywords, companyFinancialStatus, companyStaffAmount};
+  return { district, salary, keywords, companyFinancialStatus, companyStaffAmount, year, education};
 }
 
 async function run(){
-  // const browser = await puppeteer.launch({
-  //   // headless: false
-  // });
+  const browser = await puppeteer.launch({
+    // headless: false
+  });
   // let detailList = [];
   // const urls = (await fetchUrls(browser)) || [];
   // for (let i = 0; i < url.length; i++) {
   //   detailList.push(await fetchDetail(urls[i], browser));
   // }
-
-  fs.writeFile(`${__dirname}/client/message.txt`, 'Hello Node.js', (err) => {
-    if (err) throw err;
-    console.log('The file has been saved!');
-  });
+  const a = await fetchDetail('https://www.zhipin.com/job_detail/8561a178b69694561XN829S0E1Y~.html', browser);
+  console.log(a)
 }
 
 run();

@@ -3,6 +3,11 @@ const qs = require('qs');
 
 const areaList = [{"name":"彭州市","adcode":"510182"},{"name":"都江堰市","adcode":"510181"},{"name":"青白江区","adcode":"510113"},{"name":"崇州市","adcode":"510184"},{"name":"大邑县","adcode":"510129"},{"name":"蒲江县","adcode":"510131"},{"name":"简阳市","adcode":"510185"},{"name":"金堂县","adcode":"510121"},{"name":"新津县","adcode":"510132"},{"name":"邛崃市","adcode":"510183"},{"name":"青羊区","adcode":"510105"},{"name":"温江区","adcode":"510115"},{"name":"金牛区","adcode":"510106"},{"name":"双流区","adcode":"510116"},{"name":"武侯区","adcode":"510107"},{"name":"郫都区","adcode":"510117"},{"name":"新都区","adcode":"510114"},{"name":"龙泉驿区","adcode":"510112"},{"name":"成华区","adcode":"510108"},{"name":"锦江区","adcode":"510104"}];
 
+const salaryLevel = {
+  '5k': 5000,
+  '5k-10k': [5000]
+}
+
 const districtNameList = areaList.map(i => i.name);
 
 async function getDistrict(locationStr = ""){
@@ -34,7 +39,22 @@ async function getDistrict(locationStr = ""){
   }
 }
 
+function getKeyWords(text = ""){
+  let result = text.match(/\b[a-zA-Z]+\d?\b/ig) || [];
+  return Array.from(new Set(result));
+}
+
+function processSalary(salaryString = ""){
+  if(!salaryString) return '面议';
+  let salaryArr = salaryString.trim().split('-');
+  if(salaryArr.length > 1){
+
+  }
+}
+
 module.exports = {
   areaList: districtNameList,
   getDistrict,
+  getKeyWords,
+  processSalary,
 };
