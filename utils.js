@@ -57,7 +57,7 @@ async function getDistrict(locationStr = ""){
 
 function getKeyWords(text = ""){
   let result = text.match(/\b[a-zA-Z]+\d?\b/ig) || [];
-  return Array.from(new Set(result));
+  return Array.from(new Set(result)).filter(str => str.length > 0);
 }
 
 function processSalary(salaryString = ""){
