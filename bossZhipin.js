@@ -1,34 +1,38 @@
 const puppeteer = require("puppeteer");
-const { URL } = require("url");
+const {URL} = require("url");
 const fs = require('fs');
+const colors = require('colors');
 const {getDistrict, getKeyWords, processSalary, processSalaryLevel} = require('./chengduDistrict');
 
-function generateUrl(page = 1){
+function generateUrl(page = 1) {
   return `https://www.zhipin.com/c101270100/?query=前端&page=${page}&;ka=page-${page}`;
 }
 
 async function fetchUrls(browser) {
 
+  console.log('开始批量获取URL'.green);
   const page = await browser.newPage();
 
   let urls = [];
 
   for (let i = 1; i <= 10; i++) {
-    if(i === 1){
+    if (i === 1) {
       await page.goto(generateUrl(i));
     }
 
-    let result = await page.$$eval('.job-primary>.info-primary h3 > a', linkElArray => { return linkElArray.map(i => i.href) });
-    if(result && result.length > 0){
+    let result = await page.$$eval('.job-primary>.info-primary h3 > a', linkElArray => {
+      return linkElArray.map(i => i.href)
+    });
+    if (result && result.length > 0) {
       let url = await page.url();
       let urlObj = new URL(url);
       let currentPage = ~~(urlObj.searchParams.get('page'));
       let activePage = await page.$eval('.page > .cur', el => el.text);
       let nextPage = await page.$eval('.page > .cur + a', el => el.text);
-      if(currentPage === parseInt(activePage)) {
+      if (currentPage === parseInt(activePage)) {
         // url页码和页面中的当前页码相等，说明没有超出页码范围
         urls = urls.concat(result);
-        if(nextPage){
+        if (nextPage) {
           // 点击下一页
           await Promise.all([
             page.waitForNavigation(),
@@ -44,11 +48,11 @@ async function fetchUrls(browser) {
   }
 
   await page.close();
-
+  console.log(`获取URL完成, 共${urls.length}条`.bgGreen);
   return urls;
 }
 
-async function fetchDetail(url, browser){
+async function fetchDetail(url, browser) {
   const page = await browser.newPage();
   await page.goto(url);
   let jobDescription = await page.$eval('.job-sec', el => el.innerText);
@@ -66,20 +70,34 @@ async function fetchDetail(url, browser){
 
   await page.close();
 
-  return { district, salary, salaryLevel, keywords, companyFinancialStatus, companyStaffAmount, year, education};
+  return {district, salary, salaryLevel, keywords, companyFinancialStatus, companyStaffAmount, year, education};
 }
 
-async function run(){
+async function run() {
   const browser = await puppeteer.launch({
     // headless: false
   });
-  // let detailList = [];
-  // const urls = (await fetchUrls(browser)) || [];
-  // for (let i = 0; i < url.length; i++) {
-  //   detailList.push(await fetchDetail(urls[i], browser));
-  // }
-  const a = await fetchDetail('https://www.zhipin.com/job_detail/8561a178b69694561XN829S0E1Y~.html', browser);
-  console.log(a)
+  let detailList = [];
+  const urls = (await fetchUrls(browser)) || [];
+  console.log('开始获取详情'.blue);
+  for (let i = 0; i < urls.length; i++) {
+    try {
+      detailList.push(await fetchDetail(urls[i], browser));
+    } catch (e) {
+      console.log(`获取详情时发生错误：${urls[i]}`.yellow);
+    }
+  }
+
+  fs.writeFile(__dirname + '/client/result.json', JSON.stringify(detailList), (e) => {
+    if(!e){
+      console.log('成功写入文件'.bgGreen);
+    } else {
+      console.log('写入出错'.bgYellow);
+      console.log(e);
+    }
+  });
+
+  await browser.close();
 }
 
 run();
