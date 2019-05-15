@@ -4,7 +4,7 @@ const data = require('./result/bossZhipinResult.js');
 const {salaryLevelArray, yearLevelArray} = require('./utils');
 
 function getChartA(data) {
-  const districtArray = data.map(i => i.district);
+  const districtArray = Array.from(new Set(data.map(i => i.district)));
   const options = [];
 
   let dataSortByDistrict = {};
@@ -12,6 +12,7 @@ function getChartA(data) {
     dataSortByDistrict[district] = data.filter(i => i.district === district);
   });
 
+  let s = 0;
   for (let i in dataSortByDistrict) {
     let dataCollection = dataSortByDistrict[i];
     let dataSortByYear = [];
@@ -20,23 +21,28 @@ function getChartA(data) {
       dataSortByYear.push(certainYearData);
     });
     let series = [];
+
     dataSortByYear.forEach((dataArray) => {
+      debugger;
       let line = salaryLevelArray.map((salaryLevelDefine) => {
-        return dataArray.filter(item => item.salaryLevel === salaryLevelDefine).length;
+        // console.log(dataArray)
+        let length = dataArray.filter(item => {
+          return item.salaryLevel === salaryLevelDefine
+        }).length;
+        if(length >0) s+=length;
+        return length;
       });
       series.push({data: line})
     });
-    // let dataSortBySalary = salaryLevelArray.forEach((i) => {
-    //
-    // });
 
     options.push({
       title: {text: i},
       series,
     });
   }
+  console.log(s)
   return options;
 }
 
 let e = getChartA(data);
-console.log(e)
+// console.log(JSON.stringify(e))

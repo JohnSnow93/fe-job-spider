@@ -7,17 +7,18 @@ const salaryLevel = {
   '5K及以下': '5K及以下',
   '5k-10k': '5k-10k',
   '10k-15k': '10k-15k',
-  '15k-20k': '20k-30k',
+  '15k-20k': '15k-20k',
+  '20k-30k': '20k-30k',
   '30k及以上': '30k及以上',
   '面议': '面议',
 };
-const salaryLevelArray = ["5K及以下", "5k-10k", "10k-15k", "15k-20k", "30k及以上", "面议"];
+const salaryLevelArray = ["5K及以下", "5k-10k", "10k-15k", "15k-20k", '20k-30k' ,"30k及以上", "面议"];
 
 const yearLevel = {
   '1年以下':'1年以下',
-  '1-3年':'1年/1年以下',
-  '3-5年':'1年/1年以下',
-  '5-10年':'1年/1年以下',
+  '1-3年':'1-3年',
+  '3-5年':'3-5年',
+  '5-10年':'5-10年',
   '10年以上':'10年以上',
   '不限':'不限',
 };
@@ -87,17 +88,17 @@ function processSalaryLevel (salaryArray = []){
 
   function getLevelText(number = 0) {
     if(number <= 5000){
-      return '5K及以下';
+      return salaryLevel["5K及以下"];
     } else if(number > 5000 && number < 10000){
-      return '5k-10k';
+      return salaryLevel["5k-10k"];
     } else if(number >= 10000 && number < 15000){
-      return '10k-15k';
+      return salaryLevel["10k-15k"];
     } else if(number >= 15000 && number < 20000){
-      return '15k-20k';
+      return salaryLevel["15k-20k"];
     } else if(number >= 20000 && number < 30000){
-      return '20k-30k';
+      return salaryLevel["20k-30k"];
     } else if(number >= 30000) {
-      return '30k及以上';
+      return salaryLevel["30k及以上"];
     } else {
       return '面议';
     }
