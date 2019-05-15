@@ -4,9 +4,24 @@ const qs = require('qs');
 const areaList = [{"name":"彭州市","adcode":"510182"},{"name":"都江堰市","adcode":"510181"},{"name":"青白江区","adcode":"510113"},{"name":"崇州市","adcode":"510184"},{"name":"大邑县","adcode":"510129"},{"name":"蒲江县","adcode":"510131"},{"name":"简阳市","adcode":"510185"},{"name":"金堂县","adcode":"510121"},{"name":"新津县","adcode":"510132"},{"name":"邛崃市","adcode":"510183"},{"name":"青羊区","adcode":"510105"},{"name":"温江区","adcode":"510115"},{"name":"金牛区","adcode":"510106"},{"name":"双流区","adcode":"510116"},{"name":"武侯区","adcode":"510107"},{"name":"郫都区","adcode":"510117"},{"name":"新都区","adcode":"510114"},{"name":"龙泉驿区","adcode":"510112"},{"name":"成华区","adcode":"510108"},{"name":"锦江区","adcode":"510104"}];
 
 const salaryLevel = {
-  '5k': 5000,
-  '5k-10k': [5000, 10000]
-}
+  '5K及以下': '5K及以下',
+  '5k-10k': '5k-10k',
+  '10k-15k': '10k-15k',
+  '15k-20k': '20k-30k',
+  '30k及以上': '30k及以上',
+  '面议': '面议',
+};
+const salaryLevelArray = ["5K及以下", "5k-10k", "10k-15k", "15k-20k", "30k及以上", "面议"];
+
+const yearLevel = {
+  '1年以下':'1年以下',
+  '1-3年':'1年/1年以下',
+  '3-5年':'1年/1年以下',
+  '5-10年':'1年/1年以下',
+  '10年以上':'10年以上',
+  '不限':'不限',
+};
+const yearLevelArray = ["1年以下", "1-3年", "3-5年", "5-10年", "10年以上", "不限"];
 
 const districtNameList = areaList.map(i => i.name);
 
@@ -95,4 +110,8 @@ module.exports = {
   getKeyWords,
   processSalary,
   processSalaryLevel,
+  salaryLevel,
+  salaryLevelArray,
+  yearLevel,
+  yearLevelArray,
 };

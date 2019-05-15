@@ -2,10 +2,23 @@ const puppeteer = require("puppeteer");
 const {URL} = require("url");
 const fs = require('fs');
 const colors = require('colors');
-const {getDistrict, getKeyWords, processSalary, processSalaryLevel} = require('./utils');
+const {getDistrict, getKeyWords, processSalary, processSalaryLevel, yearLevel} = require('./utils');
 
 function generateUrl(page = 1) {
   return `https://www.zhipin.com/c101270100/?query=前端&page=${page}&;ka=page-${page}`;
+}
+
+function formatJobYear(str){
+  let result = yearLevel['不限'];
+  switch (str) {
+    case '应届生' : result = yearLevel["1年以下"]; break;
+    case '1年以内' : result = yearLevel["1年以下"]; break;
+    case '1-3年' : result = yearLevel["1-3年"]; break;
+    case '3-5年' : result = yearLevel["3-5年"]; break;
+    case '5-10年' : result = yearLevel["5-10年"]; break;
+    case '10年以上' : result = yearLevel["10年以上"]; break;
+  }
+  return result;
 }
 
 async function fetchUrls(browser) {
@@ -61,7 +74,7 @@ async function fetchDetail(url, browser) {
   salary = processSalary(salary);
   let salaryLevel = processSalaryLevel(salary);
   let infoArr = await page.$eval('.job-primary > .info-primary > p', el => el.innerHTML.split('<em class="dolt"></em>'));
-  let year = infoArr[1];
+  let year = formatJobYear(infoArr[1]);
   let education = infoArr[2];
   let location = await page.$eval('.location-address', el => el.innerText);
   let district = await getDistrict(location);
