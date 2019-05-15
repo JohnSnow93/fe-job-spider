@@ -1,7 +1,7 @@
 const puppeteer = require("puppeteer");
 const { URL } = require("url");
 const fs = require('fs');
-const {getDistrict, getKeyWords, processSalary} = require('./chengduDistrict');
+const {getDistrict, getKeyWords, processSalary, processSalaryLevel} = require('./chengduDistrict');
 
 function generateUrl(page = 1){
   return `https://www.zhipin.com/c101270100/?query=前端&page=${page}&;ka=page-${page}`;
@@ -54,7 +54,8 @@ async function fetchDetail(url, browser){
   let jobDescription = await page.$eval('.job-sec', el => el.innerText);
   let keywords = getKeyWords(jobDescription);
   let salary = await page.$eval('.salary', el => el.innerText);
-  salary = processSalary(salary)
+  salary = processSalary(salary);
+  let salaryLevel = processSalaryLevel(salary);
   let infoArr = await page.$eval('.job-primary > .info-primary > p', el => el.innerHTML.split('<em class="dolt"></em>'));
   let year = infoArr[1];
   let education = infoArr[2];
@@ -65,7 +66,7 @@ async function fetchDetail(url, browser){
 
   await page.close();
 
-  return { district, salary, keywords, companyFinancialStatus, companyStaffAmount, year, education};
+  return { district, salary, salaryLevel, keywords, companyFinancialStatus, companyStaffAmount, year, education};
 }
 
 async function run(){

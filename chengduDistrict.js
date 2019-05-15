@@ -5,7 +5,7 @@ const areaList = [{"name":"彭州市","adcode":"510182"},{"name":"都江堰市",
 
 const salaryLevel = {
   '5k': 5000,
-  '5k-10k': [5000]
+  '5k-10k': [5000, 10000]
 }
 
 const districtNameList = areaList.map(i => i.name);
@@ -45,10 +45,47 @@ function getKeyWords(text = ""){
 }
 
 function processSalary(salaryString = ""){
-  if(!salaryString) return '面议';
+  if(!salaryString) return [];
   let salaryArr = salaryString.trim().split('-');
   if(salaryArr.length > 1){
+    let start = parseInt(salaryArr[0]);
+    start = Number.isNaN(start) ? 0 : start * 1000;
+    let end = parseInt(salaryArr[1]);
+    end = Number.isNaN(end) ? 0 : end * 1000;
+    return [start, end];
+  } else if (salaryArr.length === 1){
+    let start = parseInt(salaryArr[0]);
+    start = Number.isNaN(start) ? 0 : start * 1000;
+    return [start];
+  }
+  return [];
+}
 
+function processSalaryLevel (salaryArray = []){
+  if(salaryArray.length === 0) return '面议';
+  else if(salaryArray.length === 1) {
+    return getLevelText(salaryArray[0]);
+  } else if(salaryArray.length === 2){
+    let averageSalary = salaryArray[0] + salaryArray[1];
+    return getLevelText(averageSalary/2)
+  }
+
+  function getLevelText(number = 0) {
+    if(number <= 5000){
+      return '5K及以下';
+    } else if(number > 5000 && number < 10000){
+      return '5k-10k';
+    } else if(number >= 10000 && number < 15000){
+      return '10k-15k';
+    } else if(number >= 15000 && number < 20000){
+      return '15k-20k';
+    } else if(number >= 20000 && number < 30000){
+      return '20k-30k';
+    } else if(number >= 30000) {
+      return '30k及以上';
+    } else {
+      return '面议';
+    }
   }
 }
 
@@ -57,4 +94,5 @@ module.exports = {
   getDistrict,
   getKeyWords,
   processSalary,
+  processSalaryLevel,
 };
