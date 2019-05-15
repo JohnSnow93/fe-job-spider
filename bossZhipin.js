@@ -2,7 +2,7 @@ const puppeteer = require("puppeteer");
 const {URL} = require("url");
 const fs = require('fs');
 const colors = require('colors');
-const {getDistrict, getKeyWords, processSalary, processSalaryLevel} = require('./chengduDistrict');
+const {getDistrict, getKeyWords, processSalary, processSalaryLevel} = require('./utils');
 
 function generateUrl(page = 1) {
   return `https://www.zhipin.com/c101270100/?query=前端&page=${page}&;ka=page-${page}`;
@@ -88,7 +88,7 @@ async function run() {
     }
   }
 
-  fs.writeFile(__dirname + '/client/result.json', JSON.stringify(detailList), (e) => {
+  fs.writeFile(__dirname + '/result/bossZhipinResult.js', 'module.exports = ' + JSON.stringify(detailList), (e) => {
     if(!e){
       console.log('成功写入文件'.bgGreen);
     } else {
