@@ -40,9 +40,92 @@ function getChartA(data) {
       series,
     });
   }
-  console.log(s)
-  return options;
+
+  const option = {
+    baseOption: {
+      title: {
+        text: '前端职位薪水',
+        left: 'center'
+      },
+      tooltip: {
+        trigger: 'axis'
+      },
+      legend: {
+        data: yearLevelArray,
+        right: 'right',
+        top: '5%'
+      },
+      timeline: {
+        data: districtArray,
+        axisType: 'category',
+        autoPlay: true
+      },
+      grid: {
+        bottom: 80,
+      },
+      yAxis: {
+        name: '月薪',
+        data: salaryLevelArray
+      },
+      xAxis: {
+        name: '数量'
+      },
+      media: [
+        // query 1
+        {
+          query: {
+            maxAspectRatio: 1
+          },
+          option: {
+
+            grid: {
+              // left: 'center',
+              top: '100',
+              width: '80%',
+              height: '60%'
+            },
+            legend: {
+              left: '0',
+              top: '6%',
+              orient: 'horizontal'
+            },
+            timeline: {
+              left: '10%',
+              bottom: 0
+            }
+
+          }
+        },
+        //query 2
+        {
+          query: {
+            minAspectRatio: 1
+          },
+          option: {
+            grid: {
+              left: 'center',
+              top: 130,
+              width: '60%',
+              height: '60%'
+
+            },
+            legend: {
+              right: '20%'
+            },
+            timeline: {
+              bottom: 30
+            }
+          }
+        }
+      ],
+      series: yearLevelArray.map(i => ({ name: i, type: 'bar', stack: '1' }))
+    },
+    options,
+  };
+
+  return option;
 }
 
-let e = getChartA(data);
-// console.log(JSON.stringify(e))
+module.exports = function () {
+  return getChartA(data);
+};
