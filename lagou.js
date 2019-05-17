@@ -2,6 +2,7 @@ const request = require("request-promise");
 const qs = require('qs');
 const colors = require('colors');
 const fs = require("fs");
+const cheerio = require('cheerio');
 const {sleep, getKeyWords, processSalary, processSalaryLevel, yearLevel} = require('./utils');
 
 let cookies = '';
@@ -49,11 +50,15 @@ async function getPageSessionCookie(){
         }
     });
 
+    const $ = cheerio.load(res.body);
+    debugger;
+    const number = $('.pager_container>span.pager_not_current');
+    console.log(number);
     return res.headers['set-cookie'];
 }
 
 async function fetchPosition(page = 1, first = true) {
-    console.log('开始获取', page);
+    console.log(`开始获取第${page}页数据`.green);
     try {
         const res = await request.post("https://www.lagou.com/jobs/positionAjax.json?needAddtionalResult=false", {
             // resolveWithFullResponse: true,
@@ -76,9 +81,9 @@ async function fetchPosition(page = 1, first = true) {
             console.warn(e)
             result = [];
         }
-        return [];
+        return result;
     } catch (e) {
-        console.warn(`请求第${page}页发生错误，错误信息如下：`);
+        console.warn(`请求第${page}页发生错误，错误信息如下：`.yellow);
         console.warn(e);
         return [];
     }
@@ -90,23 +95,24 @@ async function start() {
     let first = true;
     let res = [];
     cookies = await getPageSessionCookie();
-    while (page <= 30 && !(res instanceof Error)){
-        let result = await fetchPosition(page, first);
-        if(result.length < 15) break;
-        res = res.concat(result);
-        page ++;
-        first = false
-    }
-    console.info('请求结束'.blue);
-
-    fs.writeFile(__dirname + '/result/lagouResult.js', 'module.exports = ' + JSON.stringify(res), (e) => {
-        if(!e){
-            console.log('成功写入文件'.bgGreen);
-        } else {
-            console.log('写入出错'.bgYellow);
-            console.log(e);
-        }
-    });
+    // while (page <= 30 && !(res instanceof Error)){
+    //     let result = await fetchPosition(page, first);
+    //     await sleep(500);
+    //     if(result.length < 15) break;
+    //     res = res.concat(result);
+    //     page ++;
+    //     first = false
+    // }
+    // console.info('请求结束'.blue);
+    //
+    // fs.writeFile(__dirname + '/result/lagouResult.js', 'module.exports = ' + JSON.stringify(res), (e) => {
+    //     if(!e){
+    //         console.log('成功写入文件'.bgGreen);
+    //     } else {
+    //         console.log('写入出错'.bgYellow);
+    //         console.log(e);
+    //     }
+    // });
 }
 
 start()
