@@ -81,11 +81,11 @@ async function fetchPosition(page = 1, first = true) {
             console.warn(e)
             result = [];
         }
-        return result;
+        return { result, totalCount: res.content.positionResult.totalCount };
     } catch (e) {
         console.warn(`请求第${page}页发生错误，错误信息如下：`.yellow);
         console.warn(e);
-        return [];
+        return { result: [] };
     }
 }
 
@@ -95,24 +95,28 @@ async function start() {
     let first = true;
     let res = [];
     cookies = await getPageSessionCookie();
-    // while (page <= 30 && !(res instanceof Error)){
-    //     let result = await fetchPosition(page, first);
-    //     await sleep(500);
-    //     if(result.length < 15) break;
-    //     res = res.concat(result);
-    //     page ++;
-    //     first = false
-    // }
-    // console.info('请求结束'.blue);
-    //
-    // fs.writeFile(__dirname + '/result/lagouResult.js', 'module.exports = ' + JSON.stringify(res), (e) => {
-    //     if(!e){
-    //         console.log('成功写入文件'.bgGreen);
-    //     } else {
-    //         console.log('写入出错'.bgYellow);
-    //         console.log(e);
-    //     }
-    // });
+    let maxPage = 30;
+    while (page <= maxPage && !(res instanceof Error)){
+        let { result, totalCount } = await fetchPosition(page, first);
+        if(page === 1){
+          maxPage = (totalCount / 15 > 29)  ? 30 : Math.ceil(totalCount / 15);
+        }
+        await sleep(500);
+        if(result.length < 15) break;
+        res = res.concat(result);
+        page ++;
+        first = false
+    }
+    console.info('请求结束'.blue);
+
+    fs.writeFile(__dirname + '/result/lagouResult.js', 'module.exports = ' + JSON.stringify(res), (e) => {
+        if(!e){
+            console.log('成功写入文件'.bgGreen);
+        } else {
+            console.log('写入出错'.bgYellow);
+            console.log(e);
+        }
+    });
 }
 
 start()
