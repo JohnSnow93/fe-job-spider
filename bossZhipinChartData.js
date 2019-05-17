@@ -126,6 +126,93 @@ function getChartA(data) {
   return option;
 }
 
+function getWordCloudData(data){
+
+  const countObj = {};
+  data.forEach((jobData) => {
+    jobData.keywords && jobData.keywords.forEach((keyword) => {
+      if(countObj[keyword]){
+        countObj[keyword] += 1;
+      } else {
+        countObj[keyword] = 1;
+      }
+    });
+  });
+
+  let resultArray = [];
+
+  for (let key in countObj) {
+    resultArray.push({
+      name: key,
+      value: countObj[key]
+    })
+  }
+
+  return resultArray
+}
+
+function getPieChartData(data){
+
+  let companyScale = {};
+  let salaryPercent = {};
+  let areaJobCount = {};
+
+  data.forEach((job) => {
+    if(companyScale[job.companyStaffAmount]){
+      companyScale[job.companyStaffAmount] += 1;
+    } else {
+      companyScale[job.companyStaffAmount] = 1;
+    }
+
+    if(salaryPercent[job.salaryLevel]){
+      salaryPercent[job.salaryLevel] += 1;
+    } else {
+      salaryPercent[job.salaryLevel] = 1;
+    }
+
+    if(areaJobCount[job.district]){
+      areaJobCount[job.district] += 1;
+    } else {
+      areaJobCount[job.district] = 1;
+    }
+  });
+
+  let companyScaleArr = [];
+  let salaryPercentArr = [];
+  let areaJobCountArr = [];
+
+  for (let key in companyScale) {
+    companyScaleArr.push({
+      name: key,
+      value: companyScale[key]
+    })
+  }
+
+  for (let key in salaryPercent) {
+    salaryPercentArr.push({
+      name: key,
+      value: salaryPercent[key]
+    })
+  }
+
+  for (let key in areaJobCount) {
+    areaJobCountArr.push({
+      name: key,
+      value: areaJobCount[key]
+    })
+  }
+
+  return {
+    companyScale: companyScaleArr,
+    salaryPercent: salaryPercentArr,
+    areaJobCount: areaJobCountArr,
+  }
+}
+
 module.exports = function () {
-  return getChartA(data);
+  return {
+    chartA:  getChartA(data),
+    cloudWord: getWordCloudData(data),
+    pie: getPieChartData(data)
+  };
 };

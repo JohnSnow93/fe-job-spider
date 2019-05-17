@@ -78,12 +78,26 @@ async function fetchDetail(url, browser) {
   let education = infoArr[2];
   let location = await page.$eval('.location-address', el => el.innerText);
   let district = await getDistrict(location);
-  let companyStaffAmount = await page.$eval('.sider-company > p:nth-child(4)', el => el.innerText);
-  let companyFinancialStatus = await page.$eval('.sider-company > p:nth-child(3)', el => el.innerText);
+
+  const sidebarPelementCount = (await page.$$('.sider-company > p')).length;
+  let companyStaffAmount;
+  let companyFinancialStatus
+  if(sidebarPelementCount > 3){
+    companyStaffAmount = await page.$eval('.sider-company > p:nth-child(4)', el => el.innerText);
+    companyFinancialStatus = await page.$eval('.sider-company > p:nth-child(3)', el => el.innerText);
+  } else {
+    companyStaffAmount = await page.$eval('.sider-company > p:nth-child(3)', el => el.innerText);
+    companyFinancialStatus = '';
+  }
+
+  if(Number.isNaN(Number(companyStaffAmount[0]))){
+    companyStaffAmount = '其他'
+  }
+
 
   await page.close();
 
-  return {district, salary, salaryLevel, keywords, companyFinancialStatus, companyStaffAmount, year, education};
+  return {district, salary, salaryLevel, keywords, companyFinancialStatus, companyStaffAmount, year, education, url};
 }
 
 async function run() {
