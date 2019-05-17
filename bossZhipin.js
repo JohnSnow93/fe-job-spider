@@ -29,6 +29,7 @@ async function fetchUrls(browser) {
   let urls = [];
 
   for (let i = 1; i <= 10; i++) {
+    console.log(`正在获取第${i}页地址`.green);
     if (i === 1) {
       await page.goto(generateUrl(i));
     }
@@ -109,6 +110,7 @@ async function run() {
   console.log('开始获取详情'.blue);
   for (let i = 0; i < urls.length; i++) {
     try {
+      console.log(`正在获取第${i}个详情`.green);
       detailList.push(await fetchDetail(urls[i], browser));
     } catch (e) {
       console.log(`获取详情时发生错误：${urls[i]}`.yellow);
