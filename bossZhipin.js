@@ -98,7 +98,7 @@ async function fetchDetail(url, browser) {
 
   await page.close();
 
-  return {district, salary, salaryLevel, keywords, companyFinancialStatus, companyStaffAmount, year, education, url};
+  return {site: 'boss直聘', district, salary, salaryLevel, keywords, companyFinancialStatus, companyStaffAmount, year, education, url};
 }
 
 async function run() {

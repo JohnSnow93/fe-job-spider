@@ -105,7 +105,14 @@ function processSalaryLevel (salaryArray = []){
   }
 }
 
+function sleep(ms) {
+  return new Promise(resolve => {
+    setTimeout(resolve, ms);
+  });
+}
+
 module.exports = {
+  sleep,
   areaList: districtNameList,
   getDistrict,
   getKeyWords,
