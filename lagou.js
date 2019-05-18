@@ -43,24 +43,20 @@ function processData(jobDataArray = []){
 }
 
 async function getPageSessionCookie(){
-    const res = await request.get("https://www.lagou.com/jobs/list_%E5%89%8D%E7%AB%AF?labelWords=&fromSearch=true&suginput=", {
+    console.log('正在刷新Cookie'.bgMagenta);
+    const res = await request.get("https://www.lagou.com/jobs/list_%E5%89%8D%E7%AB%AF?city=%E6%88%90%E9%83%BD&labelWords=&fromSearch=true&suginput=", {
         resolveWithFullResponse: true,
         headers: {
             ...publicHeaders
         }
     });
-
-    const $ = cheerio.load(res.body);
-    debugger;
-    const number = $('.pager_container>span.pager_not_current');
-    console.log(number);
     return res.headers['set-cookie'];
 }
 
 async function fetchPosition(page = 1, first = true) {
     console.log(`开始获取第${page}页数据`.green);
     try {
-        const res = await request.post("https://www.lagou.com/jobs/positionAjax.json?needAddtionalResult=false", {
+        const res = await request.post("https://www.lagou.com/jobs/positionAjax.json?needAddtionalResult=false&city=%E6%88%90%E9%83%BD", {
             // resolveWithFullResponse: true,
             headers: {
                 'Cookie': cookies,
@@ -74,6 +70,9 @@ async function fetchPosition(page = 1, first = true) {
             })
         });
         console.info(`成功获取第${page}页数据, 共${res.content.positionResult.result.length}条数据`.green);
+        if(!res.content) {
+          return { result: [] }
+        }
         let result = [];
         try {
             result = processData(res.content.positionResult.result);
@@ -100,8 +99,12 @@ async function start() {
         let { result, totalCount } = await fetchPosition(page, first);
         if(page === 1){
           maxPage = (totalCount / 15 > 29)  ? 30 : Math.ceil(totalCount / 15);
+          console.log(`最大页数${maxPage}`.bgGreen)
         }
-        await sleep(500);
+        await sleep(5000 * Math.random() + page * 2000);
+        if(page % 4 === 0){
+          cookies = await getPageSessionCookie();
+        }
         if(result.length < 15) break;
         res = res.concat(result);
         page ++;

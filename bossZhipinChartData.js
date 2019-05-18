@@ -1,7 +1,10 @@
 // 将数据转换为echarts所需格式
 
-const data = require('./result/bossZhipinResult.js');
+const dataZhipin = require('./result/bossZhipinResult.js');
+const dataLagou = require('./result/lagouResult.js');
 const {salaryLevelArray, yearLevelArray} = require('./utils');
+
+const data = dataZhipin.concat(dataLagou);
 
 function getChartA(data) {
   const districtArray = Array.from(new Set(data.map(i => i.district)));
