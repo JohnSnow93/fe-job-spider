@@ -48,6 +48,7 @@ async function fetchUrls(browser) {
         urls = urls.concat(result);
         if (nextPage) {
           // 点击下一页
+          console.log('点击下一页')
           await Promise.all([
             page.waitForNavigation(),
             page.click('.page > .cur + a')
